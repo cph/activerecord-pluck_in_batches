@@ -8,7 +8,7 @@ module PluckInBatches
       batch.pluck(*args).each(&block)
     end
   end
-  
+
   def in_batches(options = {})
     options.assert_valid_keys(:batch_size)
 
@@ -16,11 +16,14 @@ module PluckInBatches
     batches = (count / batch_size.to_f).ceil
 
     relation = reorder("#{quoted_table_name}.#{quoted_primary_key} ASC").limit(batch_size)
-    batches.times do |i|
-      yield relation.offset(i * batch_size)
-    end
 
-    nil
+    if block_given?
+      batches.times do |i|
+        yield relation.offset(i * batch_size)
+      end
+    else
+      batches.times.map { |i| relation.offset(i * batch_size) }
+    end
   end
 end
 
