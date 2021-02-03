@@ -20,7 +20,7 @@ end
 module PluckInBatches
   def pluck_in_batches(*args, &block)
     options = args.extract_options!
-    in_batches(options) do |batch|
+    in_batches(**options) do |batch|
       batch.pluck(*args).each(&block)
     end
   end
